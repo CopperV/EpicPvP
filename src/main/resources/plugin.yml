@@ -2,7 +2,7 @@ name: EpicPvPArena
 version: 2.0.0-ALPHA
 main: me.Vark123.EpicPvPArena.Main
 author: Vark123
-depend: [EpicRPG,WorldGuard,CalendarEvents]
+depend: [EpicRPG,WorldGuard,CalendarEvents,PlaceholderAPI]
 api-version: 1.18
 
 commands:

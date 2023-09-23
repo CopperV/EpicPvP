@@ -1,0 +1,21 @@
+tiers:
+  '1':
+    id: t1
+    name: TIER I
+    min: 1
+    max: 30
+  '2':
+    id: t2
+    name: TIER II
+    min: 31
+    max: 60
+  '3':
+    id: t3
+    name: TIER III
+    min: 61
+    max: 85
+  '4':
+    id: t4
+    name: TIER IV
+    min: 86
+    max: 100

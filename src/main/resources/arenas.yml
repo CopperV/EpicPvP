@@ -1,0 +1,241 @@
+arenas:
+  1:
+    id: arena1
+    name: Arena 1
+    world: pvp_arena1
+    spawn1:
+      x: 12
+      y: 5
+      z: 108
+    spawn2:
+      x: 52
+      y: 5
+      z: 57
+  2:
+    id: arena2
+    name: Arena 2
+    world: pvp_arena2
+    spawn1:
+      x: -145.5
+      y: 64
+      z: 288.5
+    spawn2:
+      x: -127.5
+      y: 64
+      z: 288.5
+  3:
+    id: arena3
+    name: Arena 3
+    world: pvp_arena3
+    spawn1:
+      x: 0.5
+      y: 55
+      z: -33.5
+    spawn2:
+      x: 0.5
+      y: 55
+      z: 34.5
+  4:
+    id: arena4
+    name: Arena 4
+    world: pvp_arena4
+    spawn1:
+      x: 658.5
+      y: 15.0625
+      z: -245.5
+    spawn2:
+      x: 702.5
+      y: 15.0625
+      z: -287.5
+  5:
+    id: arena5
+    name: Arena 5
+    world: pvp_arena5
+    spawn1:
+      x: 2199.5
+      y: 15
+      z: -446.5
+    spawn2:
+      x: 2239.5
+      y: 15
+      z: -446.5
+  6:
+    id: arena6
+    name: Arena 6
+    world: pvp_arena6
+    spawn1:
+      x: 32.5
+      y: 53
+      z: 0.5
+    spawn2:
+      x: -31.5
+      y: 53
+      z: 0.5
+  7:
+    id: arena7
+    name: Arena 7
+    world: pvp_arena7
+    spawn1:
+      x: 22.5
+      y: 90
+      z: 93.5
+    spawn2:
+      x: 22.5
+      y: 90
+      z: 7.5
+  8:
+    id: arena8
+    name: Arena 8
+    world: pvp_arena8
+    spawn1:
+      x: 130.5
+      y: 11
+      z: -244.5
+    spawn2:
+      x: 130.5
+      y: 11
+      z: -142.5
+  9:
+    id: arena9
+    name: Arena 9
+    world: pvp_arena9
+    spawn1:
+      x: 622.5
+      y: 186
+      z: -730.5
+    spawn2:
+      x: 622.5
+      y: 186
+      z: -794.5
+  10:
+    id: arena10
+    name: Arena 10
+    world: pvp_arena10
+    spawn1:
+      x: 302.5
+      y: 62
+      z: 204.5
+    spawn2:
+      x: 241.5
+      y: 63
+      z: 216.5
+  11:
+    id: arena11
+    name: Arena 11
+    world: pvp_arena11
+    spawn1:
+      x: 12
+      y: 5
+      z: 108
+    spawn2:
+      x: 52
+      y: 5
+      z: 57
+  12:
+    id: arena12
+    name: Arena 12
+    world: pvp_arena12
+    spawn1:
+      x: -145.5
+      y: 64
+      z: 288.5
+    spawn2:
+      x: -127.5
+      y: 64
+      z: 288.5
+  13:
+    id: arena13
+    name: Arena 13
+    world: pvp_arena13
+    spawn1:
+      x: 0.5
+      y: 55
+      z: -33.5
+    spawn2:
+      x: 0.5
+      y: 55
+      z: 34.5
+  14:
+    id: arena14
+    name: Arena 14
+    world: pvp_arena14
+    spawn1:
+      x: 658.5
+      y: 15.0625
+      z: -245.5
+    spawn2:
+      x: 702.5
+      y: 15.0625
+      z: -287.5
+  15:
+    id: arena15
+    name: Arena 15
+    world: pvp_arena15
+    spawn1:
+      x: 2199.5
+      y: 15
+      z: -446.5
+    spawn2:
+      x: 2239.5
+      y: 15
+      z: -446.5
+  16:
+    id: arena16
+    name: Arena 16
+    world: pvp_arena16
+    spawn1:
+      x: 32.5
+      y: 53
+      z: 0.5
+    spawn2:
+      x: -31.5
+      y: 53
+      z: 0.5
+  17:
+    id: arena17
+    name: Arena 17
+    world: pvp_arena17
+    spawn1:
+      x: 22.5
+      y: 90
+      z: 93.5
+    spawn2:
+      x: 22.5
+      y: 90
+      z: 7.5
+  18:
+    id: arena18
+    name: Arena 18
+    world: pvp_arena18
+    spawn1:
+      x: 130.5
+      y: 11
+      z: -244.5
+    spawn2:
+      x: 130.5
+      y: 11
+      z: -142.5
+  19:
+    id: arena19
+    name: Arena 19
+    world: pvp_arena19
+    spawn1:
+      x: 622.5
+      y: 186
+      z: -730.5
+    spawn2:
+      x: 622.5
+      y: 186
+      z: -794.5
+  20:
+    id: arena20
+    name: Arena 20
+    world: pvp_arena20
+    spawn1:
+      x: 302.5
+      y: 62
+      z: 204.5
+    spawn2:
+      x: 241.5
+      y: 63
+      z: 216.5
