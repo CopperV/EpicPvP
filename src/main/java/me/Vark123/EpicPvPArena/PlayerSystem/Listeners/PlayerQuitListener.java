@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.Vark123.EpicPvPArena.DatabaseManager;
+import me.Vark123.EpicPvPArena.ArenaSystem.PvPArenaManager;
 import me.Vark123.EpicPvPArena.PlayerSystem.PvPPlayerManager;
 
 public class PlayerQuitListener implements Listener {
@@ -25,6 +26,7 @@ public class PlayerQuitListener implements Listener {
 			.ifPresent(pp -> {
 				DatabaseManager.savePlayer(pp);
 				PvPPlayerManager.get().unregisterPlayer(pp);
+				PvPArenaManager.get().unsignFromPlayer(pp);
 			});
 	}
 	

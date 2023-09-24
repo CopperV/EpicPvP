@@ -20,6 +20,10 @@ public final class Config {
 	private String dbUser;
 	private String dbPassword;
 	
+	private int pointDiffLimit = 500;
+	private int acceptanceDuration = 60;
+	private int basePointsMod = 11;
+	
 	private Config() { }
 	
 	public static final Config get() {return config;}

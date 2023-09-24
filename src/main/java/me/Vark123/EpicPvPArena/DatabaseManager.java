@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.bukkit.entity.Player;
@@ -130,6 +132,48 @@ public final class DatabaseManager {
 		} catch (SQLException e) {
 			return -1;
 		}
+	}
+	
+	public static int getPlayerRanking(Player player) {
+		int pos = -1;
+		
+		String sql = "SELECT tmp.row_number AS pos FROM "
+				+ "(SELECT (@row_number := @row_number + 1) AS `row_number`, p.uuid AS uuid "
+				+ "FROM (SELECT players.uuid AS uuid, player_stats.points AS points FROM players INNER JOIN player_stats ON players.id = player_stats.player_id ORDER BY player_stats.points DESC) AS p "
+				+ "JOIN (SELECT @row_number := 0) r) AS tmp "
+				+ "INNER JOIN players ON tmp.uuid = players.uuid "
+				+ "WHERE players.uuid LIKE '"+player.getUniqueId().toString()+"';";
+		
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			if(set.next())
+				pos = set.getInt("pos");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return pos;
+	}
+	
+	public static Map<String, Integer> getPvPRanking(int page) {
+		Map<String, Integer> ranking = new LinkedHashMap<>();
+		
+		String sql = "SELECT players.nick AS nick, player_stats.points AS points FROM players "
+				+ "INNER JOIN player_stats ON players.id = player_stats.player_id "
+				+ "ORDER BY player_stats.points DESC "
+				+ "LIMIT "+(page*10)+", 10";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			while(set.next()) {
+				String nick = set.getString("nick");
+				int points = set.getInt("points");
+				ranking.put(nick, points);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return ranking;
 	}
 	
 	public static void close() {
