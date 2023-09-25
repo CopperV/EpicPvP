@@ -31,7 +31,7 @@ public final class ListenerManager {
 		CalendarEventsApi calendar = inst.getCalendar();
 		if(calendar.isRegisteredEvent("reset_pvp_ranking"))
 			calendar.removeEvent("reset_pvp_ranking");
-		calendar.addEvent("reset_pvp_ranking", "monday", "10:35");
+		calendar.addEvent("reset_pvp_ranking", "monday", "00:05");
 	}
 	
 }

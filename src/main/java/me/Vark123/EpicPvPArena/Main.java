@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.Getter;
+import me.Vark123.EpicPvPArena.ArenaSystem.PvPPlaceholders;
 import me.nikl.calendarevents.CalendarEvents;
 import me.nikl.calendarevents.CalendarEventsApi;
 
@@ -26,6 +27,8 @@ public class Main extends JavaPlugin {
 		ListenerManager.registerListeners();
 		FileManager.init();
 		DatabaseManager.init();
+		
+		new PvPPlaceholders().register();
 	}
 
 	@Override

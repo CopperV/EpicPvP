@@ -2,10 +2,14 @@ package me.Vark123.EpicPvPArena;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -135,6 +139,31 @@ public final class FileManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static Pair<String, Integer> getPlayerAtRank(int pos) {
+		MutableObject<Pair<String, Integer>> result = new MutableObject<>();
+		if(!archiveDir.exists())
+			result.getValue();
+		Arrays.asList(archiveDir.listFiles()).stream()
+			.filter(file -> file.isFile())
+			.filter(file -> file.getName().endsWith(".yml"))
+			.max((f1, f2) -> Long.compare(f1.lastModified(), f2.lastModified()))
+			.ifPresent(file -> {
+				YamlConfiguration fYml = YamlConfiguration.loadConfiguration(file);
+				List<Pair<String, Integer>> ranking = new LinkedList<>();
+				fYml.getKeys(false).stream()
+					.map(fYml::getConfigurationSection)
+					.forEach(section -> {
+						int points = section.getInt("points");
+						section.getStringList("nicks")
+							.forEach(nick -> ranking.add(new Pair<>(nick, points)));
+					});
+				if(pos > ranking.size())
+					return;
+				result.setValue(ranking.get((pos - 1)));
+			});
+		return result.getValue();
 	}
 	
 }

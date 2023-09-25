@@ -285,6 +285,26 @@ public final class DatabaseManager {
 		return ranking;
 	}
 	
+	public static Pair<String, Integer> getPlayerAtRank(int pos) {
+		String sql = "SELECT players.nick AS nick, player_stats.points AS points "
+				+ "FROM player_stats "
+				+ "INNER JOIN players ON player_stats.player_id = players.id "
+				+ "ORDER BY points DESC "
+				+ "LIMIT 1 "
+				+ "OFFSET "+(pos-1)+";";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			if(set.next()) {
+				String nick = set.getString("nick");
+				int points = set.getInt("points");
+				return new Pair<>(nick, points);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static void close() {
 		if(c == null)
 			return;

@@ -24,10 +24,11 @@ public class ArenaSummaryListener implements Listener {
 			return;
 		
 		LocalDate date = LocalDate.now();
-		int week = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR) - 1;
 		int year = date.getYear();
+		int week = date.get(ChronoField.ALIGNED_WEEK_OF_YEAR) - 1;
+		String strWeek = String.format("%02d", week);
 		Bukkit.broadcastMessage("§7["+Config.get().getPrefix()+"§7] "
-				+ "§eSezon rankingowy §7§o"+year+"-"+week+" §ezakonczyl sie. Wszystkie walki zostaja przerwane i rozdane tokeny");
+				+ "§eSezon rankingowy §7§o"+year+"-"+strWeek+" §ezakonczyl sie. Wszystkie walki zostaja przerwane i rozdane tokeny");
 		
 		PvPArenaManager.get().getFights().forEach(fight -> fight.stopFight("§eWalka przerwana z powodu podsumowania sezonu rankingowego"));
 		Bukkit.getOnlinePlayers().stream()
@@ -35,7 +36,7 @@ public class ArenaSummaryListener implements Listener {
 			.filter(pp -> pp.isPresent())
 			.map(pp -> pp.get())
 			.forEach(DatabaseManager::savePlayer);
-		FileManager.archiveRanking(year+"-"+week);
+		FileManager.archiveRanking(year+"-"+strWeek);
 		DatabaseManager.resetRanking();
 	}
 	
