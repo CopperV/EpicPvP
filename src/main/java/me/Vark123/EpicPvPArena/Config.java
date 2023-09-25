@@ -20,9 +20,11 @@ public final class Config {
 	private String dbUser;
 	private String dbPassword;
 	
-	private int pointDiffLimit = 500;
-	private int acceptanceDuration = 60;
-	private int basePointsMod = 11;
+	private int pointDiffLimit;
+	private int acceptanceDuration;
+	private int basePointsMod;
+
+	private int playerSaveInterval;
 	
 	private Config() { }
 	
@@ -41,6 +43,12 @@ public final class Config {
 		this.db = fYml.getString("DB.database");
 		this.dbUser = fYml.getString("DB.user");
 		this.dbPassword = fYml.getString("DB.passwd");
+		
+		this.pointDiffLimit = fYml.getInt("pvp.points-diff-limit");
+		this.acceptanceDuration = fYml.getInt("pvp.acceptance-duration");
+		this.basePointsMod = fYml.getInt("pvp.base-arena-points");
+		
+		this.playerSaveInterval = fYml.getInt("players.save-interval");
 	}
 	
 }

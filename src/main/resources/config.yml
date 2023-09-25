@@ -5,3 +5,9 @@ DB:
   database: database
   user: root
   passwd: root
+pvp:
+  points-diff-limit: 500
+  acceptance-duration: 60
+  base-arena-points: 11;
+players:
+  save-interval: 60
