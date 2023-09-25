@@ -1,7 +1,11 @@
 package me.Vark123.EpicPvPArena;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,6 +14,7 @@ import me.Vark123.EpicPvPArena.ArenaSystem.ArenaTier;
 import me.Vark123.EpicPvPArena.ArenaSystem.PvPArena;
 import me.Vark123.EpicPvPArena.ArenaSystem.PvPArenaManager;
 import me.Vark123.EpicPvPArena.Tools.EpicLocation;
+import me.Vark123.EpicPvPArena.Tools.Pair;
 
 public final class FileManager {
 
@@ -98,6 +103,38 @@ public final class FileManager {
 						.maxLvl(max)
 						.build());
 			});
+	}
+	
+	public static void archiveRanking(String identifier) {
+		File archive = new File(archiveDir, identifier+".yml");
+		if(archive.exists())
+			return;
+		try {
+			archive.createNewFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(archive);
+		MutableInt posController = new MutableInt(1);
+		DatabaseManager.getRanking(1000).entrySet()
+			.parallelStream()
+			.sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+			.forEachOrdered(entry -> {
+				int pos = posController.getAndIncrement();
+				Collection<Pair<String,Integer>> nicks = entry.getValue();
+				int points = entry.getKey();
+				fYml.set(pos+".pos", pos);
+				fYml.set(pos+".points", points);
+				fYml.set(pos+".nicks", nicks.stream()
+						.map(pair -> pair.getKey())
+						.collect(Collectors.toList()));
+			});
+		try {
+			fYml.save(archive);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

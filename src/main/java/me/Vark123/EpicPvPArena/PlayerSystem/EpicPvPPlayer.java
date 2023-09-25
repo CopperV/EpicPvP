@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Builder
@@ -14,6 +15,7 @@ import lombok.Getter;
 public class EpicPvPPlayer {
 
 	private Player player;
+	@Setter
 	private int points;
 	private int tokens;
 	

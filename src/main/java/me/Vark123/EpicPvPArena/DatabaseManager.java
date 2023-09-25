@@ -4,13 +4,22 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import me.Vark123.EpicPvPArena.PlayerSystem.EpicPvPPlayer;
+import me.Vark123.EpicPvPArena.PlayerSystem.PvPPlayerManager;
+import me.Vark123.EpicPvPArena.Tools.Pair;
 
 public final class DatabaseManager {
 
@@ -123,7 +132,10 @@ public final class DatabaseManager {
 	}
 	
 	private static int getPlayerId(Player p) {
-		String uid = p.getUniqueId().toString();
+		return getPlayerId(p.getUniqueId());
+	}
+	
+	private static int getPlayerId(UUID uid) {
 		String sql = "SELECT id FROM players WHERE uuid LIKE \""+uid+"\";";
 		try {
 			ResultSet set = c.createStatement().executeQuery(sql);
@@ -168,6 +180,103 @@ public final class DatabaseManager {
 				String nick = set.getString("nick");
 				int points = set.getInt("points");
 				ranking.put(nick, points);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return ranking;
+	}
+	
+	public static void resetRanking() {
+		List<String> tokenSqls = new LinkedList<>();
+		MutableInt posController = new MutableInt(1);
+		DatabaseManager.getRanking(1000).entrySet()
+			.parallelStream()
+			.sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+			.forEachOrdered(entry -> {
+				int pos = posController.getAndIncrement();
+				Collection<Pair<String, Integer>> nicks = entry.getValue();
+				
+				MutableInt tokens = new MutableInt(0);
+				if(pos == 1) tokens.setValue(13);
+				else if(pos == 2) tokens.setValue(10);
+				else if(pos == 3) tokens.setValue(7);
+				else if(pos >= 4 && pos <= 10) tokens.setValue(5);
+				else if(pos >= 11 && pos <= 25) tokens.setValue(4);
+				else if(pos >= 26 && pos <= 50) tokens.setValue(3);
+				else if(pos >= 51 && pos <= 100) tokens.setValue(2);
+				else if(pos >= 101 && pos <= 250) tokens.setValue(1);
+				
+				if(tokens.getValue() <= 0)
+					return;
+				
+				nicks.stream()
+					.forEach(pair -> {
+						String nick = pair.getKey();
+						int presentTokens = pair.getValue();
+						OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(nick);
+						if(offPlayer.isOnline()) {
+							Player p = offPlayer.getPlayer();
+							PvPPlayerManager.get().getPvPPlayer(p)
+								.ifPresent(pp -> {
+									pp.setPoints(1000);
+									pp.addTokens(tokens.getValue());
+									p.sendMessage("§7["+Config.get().getPrefix()+"§7] "
+											+ "§eOtrzymujesz §7"+tokens.getValue()+" §etokenow gladiatora!");
+								});
+						}
+						UUID uid = offPlayer.getUniqueId();
+						int id = getPlayerId(uid);
+						if(id < 0)
+							return;
+						String sql = "UPDATE player_stats "
+								+ "SET player_stats.tokens = "+(presentTokens+tokens.getValue())+" "
+								+ "WHERE player_stats.player_id = "+id+";";
+						tokenSqls.add(sql);
+					});
+		});
+		String resetSql = "UPDATE player_stats SET player_stats.points = 1000;";
+		try {
+			try {
+				c.setAutoCommit(false);
+				for(String sql : tokenSqls)
+					c.createStatement().executeUpdate(sql);
+				c.createStatement().executeUpdate(resetSql);
+				c.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				c.rollback();
+			} finally {
+				c.setAutoCommit(true);
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			c.createStatement().executeUpdate(resetSql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Map<Integer, Collection<Pair<String, Integer>>> getRanking(int bound) {
+		Map<Integer, Collection<Pair<String, Integer>>> ranking = new LinkedHashMap<>();
+		
+		String sql = "SELECT players.nick AS nick, player_stats.points AS points, player_stats.tokens AS tokens "
+				+ "FROM player_stats "
+				+ "INNER JOIN players ON player_stats.player_id = players.id "
+				+ "WHERE points > "+bound+" "
+				+ "ORDER BY points DESC;";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			while(set.next()) {
+				String nick = set.getString("nick");
+				int points = set.getInt("points");
+				int tokens = set.getInt("tokens");
+				Collection<Pair<String, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
+				tmp.add(new Pair<>(nick, tokens));
+				ranking.put(points, tmp);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
