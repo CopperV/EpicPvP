@@ -36,7 +36,7 @@ public class PvPPlaceholders extends PlaceholderExpansion {
 			if(!StringUtils.isNumeric(strTop))
 				return "";
 			int top = Integer.parseInt(strTop);
-			Pair<String, Integer> result = DatabaseManager.getPlayerAtRank(top);
+			Pair<String, Integer> result = DatabaseManager.getPlayerAtRank(top, 900, 10);
 			if(result == null)
 				return "";
 			return result.getKey()+"    §7§o"+result.getValue();

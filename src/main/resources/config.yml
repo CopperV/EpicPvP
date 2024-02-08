@@ -9,5 +9,7 @@ pvp:
   points-diff-limit: 500
   acceptance-duration: 60
   base-arena-points: 11;
+  counting-down-duration: 6;
+  max-fight-time: 120;
 players:
   save-interval: 60
