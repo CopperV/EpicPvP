@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.mutable.MutableInt;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -49,7 +49,8 @@ public final class PvPArenaManager {
 		fights = new HashSet<>();
 		confirmations = new HashSet<>();
 		
-		findMessage = "§7["+Config.get().getPrefix()+"§7] §eZnalezlismy dla Ciebie odpowiedniego przeciwnika. "
+		findMessage = "§7[§x§f§b§c§b§8§4§lE§x§f§5§b§f§6§8§lp§x§e§f§b§4§4§d§li§x§e§8§a§8§3§1§lc§x§e§2§9§c§1§5§lA§x§e§9§b§1§3§9§lr§x§f§1§c§6§5§d§le§x§f§8§d§b§8§0§ln§x§f§f§f§0§a§4§la§7] "
+				+ "§eZnalezlismy dla Ciebie odpowiedniego przeciwnika. "
 				+ "Kliknij §aAKCEPTUJ§e, by zaakceptowac wyzwanie. "
 				+ "Kliknij §cODRZUC§e, by odrzucic wyzwanie";
 		confirmationMessage = new TextComponent("");
@@ -117,16 +118,18 @@ public final class PvPArenaManager {
 					}
 				}
 				
-				MutableInt arenaIndex = new MutableInt();
+//				MutableInt arenaIndex = new MutableInt();
+				Random rand = new Random();
 				matchedPlayers.stream()
 					.forEach(pair -> {
 						EpicPvPPlayer pp1 = pair.getKey();
 						EpicPvPPlayer pp2 = pair.getValue();
-						int index = arenaIndex.getAndIncrement();
-						if(index >= freeArenas.size())
+						if(freeArenas.size() < 1)
 							return;
+						int index = rand.nextInt(freeArenas.size());
 						
 						PvPArena arena = freeArenas.get(index);
+						freeArenas.remove(index);
 						ArenaFight fight = ArenaFight.builder()
 								.arena(arena)
 								.player1(pp1)

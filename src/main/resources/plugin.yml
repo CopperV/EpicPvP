@@ -1,5 +1,5 @@
 name: EpicPvPArena
-version: 2.0.0
+version: 2.0.1
 main: me.Vark123.EpicPvPArena.Main
 author: Vark123
 depend: [EpicRPG,CalendarEvents,PlaceholderAPI]

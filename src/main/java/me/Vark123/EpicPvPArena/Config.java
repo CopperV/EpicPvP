@@ -26,6 +26,9 @@ public final class Config {
 
 	private int playerSaveInterval;
 	
+	private int countingDownDuration;
+	private int maxFightTime;
+	
 	private Config() { }
 	
 	public static final Config get() {return config;}
@@ -47,6 +50,8 @@ public final class Config {
 		this.pointDiffLimit = fYml.getInt("pvp.points-diff-limit");
 		this.acceptanceDuration = fYml.getInt("pvp.acceptance-duration");
 		this.basePointsMod = fYml.getInt("pvp.base-arena-points");
+		this.countingDownDuration = fYml.getInt("pvp.counting-down-duration");
+		this.maxFightTime = fYml.getInt("pvp.max-fight-time");
 		
 		this.playerSaveInterval = fYml.getInt("players.save-interval");
 	}

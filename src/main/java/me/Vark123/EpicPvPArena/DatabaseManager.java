@@ -34,7 +34,7 @@ public final class DatabaseManager {
 		prop.setProperty("password", conf.getDbPassword());
 		prop.setProperty("autoReconnect", "true");
 		try {
-			c = DriverManager.getConnection("jdbc:mysql://"+conf.getDbHost()+":"+conf.getDbPort()+"/"+conf.getDb()+"?useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10",prop);
+			c = DriverManager.getConnection("jdbc:mysql://"+conf.getDbHost()+":"+conf.getDbPort()+"/"+conf.getDb()+"?useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&allowPublicKeyRetrieval=true",prop);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			Main.getInst().getPluginLoader().disablePlugin(Main.getInst());
@@ -50,6 +50,8 @@ public final class DatabaseManager {
 				+ "player_id INT UNIQUE NOT NULL,"
 				+ "points INT,"
 				+ "tokens INT,"
+				+ "fights INT,"
+				+ "wins INT,"
 				+ "FOREIGN KEY (player_id) REFERENCES players(id));";
 
 		try {
@@ -72,8 +74,11 @@ public final class DatabaseManager {
 	public static EpicPvPPlayer loadPlayer(Player p) {
 		int points = 1000;
 		int tokens = 0;
+		int fights = 0;
+		int wins = 0;
 		
-		String sql = "SELECT player_stats.points AS POINTS, player_stats.tokens AS TOKENS from player_stats "
+		String sql = "SELECT player_stats.points AS POINTS, player_stats.tokens AS TOKENS, "
+				+ "player_stats.fights AS FIGHTS, player_stats.wins AS WINS from player_stats "
 				+ "INNER JOIN players ON player_stats.player_id = players.id "
 				+ "WHERE players.uuid LIKE \""+p.getUniqueId().toString()+"\";";
 		try {
@@ -81,6 +86,8 @@ public final class DatabaseManager {
 			if(set.next()) {
 				points = set.getInt("POINTS");
 				tokens = set.getInt("TOKENS");
+				fights = set.getInt("FIGHTS");
+				wins = set.getInt("WINS");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -90,6 +97,8 @@ public final class DatabaseManager {
 				.player(p)
 				.points(points)
 				.tokens(tokens)
+				.fights(fights)
+				.wins(wins)
 				.build();
 	}
 	
@@ -103,7 +112,9 @@ public final class DatabaseManager {
 		
 		int points = pp.getPoints();
 		int tokens = pp.getTokens();
-		String call = "CALL SavePlayer("+id+","+points+","+tokens+");";
+		int fights = pp.getFights();
+		int wins = pp.getWins();
+		String call = "CALL SavePlayer("+id+","+points+","+tokens+","+fights+","+wins+");";
 		try {
 			c.createStatement().execute(call);
 		} catch (SQLException e) {
@@ -191,9 +202,9 @@ public final class DatabaseManager {
 	public static void resetRanking() {
 		List<String> tokenSqls = new LinkedList<>();
 		MutableInt posController = new MutableInt(1);
-		DatabaseManager.getRanking(1000).entrySet()
+		DatabaseManager.getRanking(900, 10).entrySet()
 			.parallelStream()
-			.sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+			.sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey()))
 			.forEachOrdered(entry -> {
 				int pos = posController.getAndIncrement();
 				Collection<Pair<String, Integer>> nicks = entry.getValue();
@@ -221,6 +232,7 @@ public final class DatabaseManager {
 							PvPPlayerManager.get().getPvPPlayer(p)
 								.ifPresent(pp -> {
 									pp.setPoints(1000);
+									pp.resetFights();
 									pp.addTokens(tokens.getValue());
 									p.sendMessage("§7["+Config.get().getPrefix()+"§7] "
 											+ "§eOtrzymujesz §7"+tokens.getValue()+" §etokenow gladiatora!");
@@ -236,7 +248,7 @@ public final class DatabaseManager {
 						tokenSqls.add(sql);
 					});
 		});
-		String resetSql = "UPDATE player_stats SET player_stats.points = 1000;";
+		String resetSql = "UPDATE player_stats SET player_stats.points = 1000, player_stats.fights = 0, player_stats.wins = 0;";
 		try {
 			try {
 				c.setAutoCommit(false);
@@ -284,11 +296,56 @@ public final class DatabaseManager {
 		
 		return ranking;
 	}
+	public static Map<Integer, Collection<Pair<String, Integer>>> getRanking(int bound, int fights) {
+		Map<Integer, Collection<Pair<String, Integer>>> ranking = new LinkedHashMap<>();
+		
+		String sql = "SELECT players.nick AS nick, player_stats.points AS points, player_stats.tokens AS tokens, player_stats.fights AS fights "
+				+ "FROM player_stats "
+				+ "INNER JOIN players ON player_stats.player_id = players.id "
+				+ "WHERE points > "+bound+" AND fights > "+fights+" "
+				+ "ORDER BY points DESC;";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			while(set.next()) {
+				String nick = set.getString("nick");
+				int points = set.getInt("points");
+				int tokens = set.getInt("tokens");
+				Collection<Pair<String, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
+				tmp.add(new Pair<>(nick, tokens));
+				ranking.put(points, tmp);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return ranking;
+	}
 	
 	public static Pair<String, Integer> getPlayerAtRank(int pos) {
 		String sql = "SELECT players.nick AS nick, player_stats.points AS points "
 				+ "FROM player_stats "
 				+ "INNER JOIN players ON player_stats.player_id = players.id "
+				+ "ORDER BY points DESC "
+				+ "LIMIT 1 "
+				+ "OFFSET "+(pos-1)+";";
+		try {
+			ResultSet set = c.createStatement().executeQuery(sql);
+			if(set.next()) {
+				String nick = set.getString("nick");
+				int points = set.getInt("points");
+				return new Pair<>(nick, points);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Pair<String, Integer> getPlayerAtRank(int pos, int bound, int fights) {
+		String sql = "SELECT players.nick AS nick, player_stats.points AS points "
+				+ "FROM player_stats "
+				+ "INNER JOIN players ON player_stats.player_id = players.id "
+				+ "WHERE points > "+bound+" AND fights > "+fights+" "
 				+ "ORDER BY points DESC "
 				+ "LIMIT 1 "
 				+ "OFFSET "+(pos-1)+";";

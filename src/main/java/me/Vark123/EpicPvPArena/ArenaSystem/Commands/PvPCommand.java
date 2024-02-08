@@ -33,6 +33,8 @@ public class PvPCommand implements CommandExecutor {
 				p.sendMessage("§4§l» §ePosiadasz §7§o"+pp.getPoints()+" §epunktow rankingowych");
 				p.sendMessage("§4§l» §eZajmujesz §7§o"+rank+" miejsce §ew rankingu serwerowym");
 				p.sendMessage("§4§l» §ePosiadasz §7§o"+pp.getTokens()+" §etokenow gladiatora");
+				p.sendMessage("§4§l» §ePosiadasz §7§o"+String.format("%.2f", pp.getKD())+" §ewskaznik K/D");
+				p.sendMessage("§4§l» §eRozegrales §7§o"+pp.getFights()+" §ewalk");
 				p.sendMessage(" ");
 				p.sendMessage("§7=============================");
 			}, () -> p.sendMessage("§7["+Config.get().getPrefix()+"§7] "

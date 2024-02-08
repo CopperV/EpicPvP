@@ -121,9 +121,9 @@ public final class FileManager {
 		}
 		YamlConfiguration fYml = YamlConfiguration.loadConfiguration(archive);
 		MutableInt posController = new MutableInt(1);
-		DatabaseManager.getRanking(1000).entrySet()
+		DatabaseManager.getRanking(900, 10).entrySet()
 			.parallelStream()
-			.sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey()))
+			.sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey()))
 			.forEachOrdered(entry -> {
 				int pos = posController.getAndIncrement();
 				Collection<Pair<String,Integer>> nicks = entry.getValue();

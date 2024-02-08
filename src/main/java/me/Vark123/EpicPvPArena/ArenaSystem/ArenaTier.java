@@ -19,6 +19,8 @@ public class ArenaTier {
 	
 	public boolean isPlayerInTier(Player p) {
 		RpgPlayer rpg = PlayerManager.getInstance().getRpgPlayer(p);
+		if(rpg == null)
+			return false;
 		RpgPlayerInfo info = rpg.getInfo();
 		if(info.getLevel() < minLvl)
 			return false;

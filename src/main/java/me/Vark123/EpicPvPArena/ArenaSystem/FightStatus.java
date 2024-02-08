@@ -4,6 +4,7 @@ public enum FightStatus {
 
 	CONFIRMATION,
 	TELEPORTATION,
+	PREPARING,
 	FIGHT,
 	END;
 	

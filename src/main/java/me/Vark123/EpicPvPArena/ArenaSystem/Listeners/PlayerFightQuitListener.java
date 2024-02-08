@@ -30,7 +30,8 @@ public class PlayerFightQuitListener implements Listener {
 				PvPArenaManager.get().getFights().stream()
 					.filter(fight -> fight.getPlayer1().equals(pp) || fight.getPlayer2().equals(pp))
 					.filter(fight -> fight.getStatus().equals(FightStatus.FIGHT)
-							|| fight.getStatus().equals(FightStatus.TELEPORTATION))
+							|| fight.getStatus().equals(FightStatus.TELEPORTATION)
+							|| fight.getStatus().equals(FightStatus.PREPARING))
 					.findAny()
 					.ifPresent(fight -> {
 						EpicPvPPlayer winner = fight.getPlayer1().equals(pp) ? fight.getPlayer2() : fight.getPlayer1();
