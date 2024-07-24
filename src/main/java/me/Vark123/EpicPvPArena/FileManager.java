@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -126,12 +128,14 @@ public final class FileManager {
 			.sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey()))
 			.forEachOrdered(entry -> {
 				int pos = posController.getAndIncrement();
-				Collection<Pair<String,Integer>> nicks = entry.getValue();
+				Collection<Pair<UUID,Integer>> nicks = entry.getValue();
 				int points = entry.getKey();
 				fYml.set(pos+".pos", pos);
 				fYml.set(pos+".points", points);
 				fYml.set(pos+".nicks", nicks.stream()
 						.map(pair -> pair.getKey())
+						.map(Bukkit::getOfflinePlayer)
+						.map(op -> op.getName())
 						.collect(Collectors.toList()));
 			});
 		try {

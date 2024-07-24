@@ -8,7 +8,7 @@ import me.Vark123.EpicPvPArena.ArenaSystem.FightStatus;
 import me.Vark123.EpicPvPArena.ArenaSystem.PvPArenaManager;
 import me.Vark123.EpicPvPArena.PlayerSystem.PvPPlayerManager;
 import me.Vark123.EpicRPG.HealthSystem.RpgPlayerHealEvent;
-import me.Vark123.EpicRPG.Potions.RpgPlayerManaRegenEvent;
+import me.Vark123.EpicRPG.Players.Events.RpgPlayerManaRegenEvent;
 
 public class FightPotionDebuffListener implements Listener {
 
