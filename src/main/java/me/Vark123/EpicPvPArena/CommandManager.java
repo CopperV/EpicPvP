@@ -6,6 +6,7 @@ import me.Vark123.EpicPvPArena.ArenaSystem.Commands.ArenaCommandManager;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.BaseArenaCommand;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.PvPCommand;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.RankingCommand;
+import me.Vark123.EpicPvPArena.ArenaSystem.Commands.TokenCommand;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.ArenaCmdImpl.ArenaAcceptCommand;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.ArenaCmdImpl.ArenaRejectCommand;
 import me.Vark123.EpicPvPArena.ArenaSystem.Commands.ArenaCmdImpl.ArenaSignCommand;
@@ -19,6 +20,7 @@ public final class CommandManager {
 		Bukkit.getPluginCommand("pvp").setExecutor(new PvPCommand());
 		Bukkit.getPluginCommand("ranking").setExecutor(new RankingCommand());
 		Bukkit.getPluginCommand("arena").setExecutor(new BaseArenaCommand());
+		Bukkit.getPluginCommand("token").setExecutor(new TokenCommand());
 		
 		ArenaCommandManager.get().registerSubcommand(new ArenaAcceptCommand());
 		ArenaCommandManager.get().registerSubcommand(new ArenaRejectCommand());

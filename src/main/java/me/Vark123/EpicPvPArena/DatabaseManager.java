@@ -207,7 +207,7 @@ public final class DatabaseManager {
 			.sorted((e1, e2) -> e2.getKey().compareTo(e1.getKey()))
 			.forEachOrdered(entry -> {
 				int pos = posController.getAndIncrement();
-				Collection<Pair<String, Integer>> nicks = entry.getValue();
+				Collection<Pair<UUID, Integer>> nicks = entry.getValue();
 				
 				MutableInt tokens = new MutableInt(0);
 				if(pos == 1) tokens.setValue(13);
@@ -224,9 +224,9 @@ public final class DatabaseManager {
 				
 				nicks.stream()
 					.forEach(pair -> {
-						String nick = pair.getKey();
+						UUID uid = pair.getKey();
 						int presentTokens = pair.getValue();
-						OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(nick);
+						OfflinePlayer offPlayer = Bukkit.getOfflinePlayer(uid);
 						if(offPlayer.isOnline()) {
 							Player p = offPlayer.getPlayer();
 							PvPPlayerManager.get().getPvPPlayer(p)
@@ -238,7 +238,6 @@ public final class DatabaseManager {
 											+ "§eOtrzymujesz §7"+tokens.getValue()+" §etokenow gladiatora!");
 								});
 						}
-						UUID uid = offPlayer.getUniqueId();
 						int id = getPlayerId(uid);
 						if(id < 0)
 							return;
@@ -272,22 +271,23 @@ public final class DatabaseManager {
 		}
 	}
 	
-	public static Map<Integer, Collection<Pair<String, Integer>>> getRanking(int bound) {
-		Map<Integer, Collection<Pair<String, Integer>>> ranking = new LinkedHashMap<>();
+	public static Map<Integer, Collection<Pair<UUID, Integer>>> getRanking(int bound) {
+		Map<Integer, Collection<Pair<UUID, Integer>>> ranking = new LinkedHashMap<>();
 		
-		String sql = "SELECT players.nick AS nick, player_stats.points AS points, player_stats.tokens AS tokens "
+		String sql = "SELECT players.nick AS nick, players.uuid AS id, player_stats.points AS points, player_stats.tokens AS tokens "
 				+ "FROM player_stats "
 				+ "INNER JOIN players ON player_stats.player_id = players.id "
-				+ "WHERE points > "+bound+" "
+				+ "WHERE points >= "+bound+" "
 				+ "ORDER BY points DESC;";
 		try {
 			ResultSet set = c.createStatement().executeQuery(sql);
 			while(set.next()) {
-				String nick = set.getString("nick");
+//				String nick = set.getString("nick");
+				UUID uid = UUID.fromString(set.getString("id"));
 				int points = set.getInt("points");
 				int tokens = set.getInt("tokens");
-				Collection<Pair<String, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
-				tmp.add(new Pair<>(nick, tokens));
+				Collection<Pair<UUID, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
+				tmp.add(new Pair<>(uid, tokens));
 				ranking.put(points, tmp);
 			}
 		} catch (SQLException e) {
@@ -296,22 +296,23 @@ public final class DatabaseManager {
 		
 		return ranking;
 	}
-	public static Map<Integer, Collection<Pair<String, Integer>>> getRanking(int bound, int fights) {
-		Map<Integer, Collection<Pair<String, Integer>>> ranking = new LinkedHashMap<>();
+	public static Map<Integer, Collection<Pair<UUID, Integer>>> getRanking(int bound, int fights) {
+		Map<Integer, Collection<Pair<UUID, Integer>>> ranking = new LinkedHashMap<>();
 		
-		String sql = "SELECT players.nick AS nick, player_stats.points AS points, player_stats.tokens AS tokens, player_stats.fights AS fights "
+		String sql = "SELECT players.nick AS nick, players.uuid AS id, player_stats.points AS points, player_stats.tokens AS tokens, player_stats.fights AS fights "
 				+ "FROM player_stats "
 				+ "INNER JOIN players ON player_stats.player_id = players.id "
-				+ "WHERE points > "+bound+" AND fights > "+fights+" "
+				+ "WHERE points >= "+bound+" AND fights >= "+fights+" "
 				+ "ORDER BY points DESC;";
 		try {
 			ResultSet set = c.createStatement().executeQuery(sql);
 			while(set.next()) {
-				String nick = set.getString("nick");
+//				String nick = set.getString("nick");
+				UUID uid = UUID.fromString(set.getString("id"));
 				int points = set.getInt("points");
 				int tokens = set.getInt("tokens");
-				Collection<Pair<String, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
-				tmp.add(new Pair<>(nick, tokens));
+				Collection<Pair<UUID, Integer>> tmp = ranking.getOrDefault(points, new LinkedList<>());
+				tmp.add(new Pair<>(uid, tokens));
 				ranking.put(points, tmp);
 			}
 		} catch (SQLException e) {
@@ -345,7 +346,7 @@ public final class DatabaseManager {
 		String sql = "SELECT players.nick AS nick, player_stats.points AS points "
 				+ "FROM player_stats "
 				+ "INNER JOIN players ON player_stats.player_id = players.id "
-				+ "WHERE points > "+bound+" AND fights > "+fights+" "
+				+ "WHERE points >= "+bound+" AND fights >= "+fights+" "
 				+ "ORDER BY points DESC "
 				+ "LIMIT 1 "
 				+ "OFFSET "+(pos-1)+";";
